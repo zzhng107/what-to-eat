@@ -3,7 +3,10 @@ var express = require('express'),
     router = express.Router(),
     mongoose = require('mongoose'),
     secrets = require('./config/secrets'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    passport = require('passport'),
+    cookieSession = require('cookie-session'),
+    cookieParser = require('cookie-parser');
 
 // Create our Express application
 var app = express();
@@ -23,14 +26,25 @@ var allowCrossDomain = function (req, res, next) {
 };
 app.use(allowCrossDomain);
 
+// Initialize cookie sessions //not sure if needed
+app.use(cookieParser());
+app.use(cookieSession({
+  keys: ['asdf', 'asdf']
+}));
+
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
 
+//Passport
+require('./auth/passport')(passport);
+app.use(passport.initialize()); // Create an instance of Passport
+app.use(passport.session());
+
 // Use routes as a module (see index.js)
-require('./routes')(app);
+require('./routes/index')(app,passport);
 
 // Start the server
 app.listen(port);
