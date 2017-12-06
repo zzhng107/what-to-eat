@@ -15,7 +15,13 @@ var RestaurantSchema = new mongoose.Schema({
 	hours:{},
 	stars:{type:Number, default: -1},
 	RestaurantsPriceRange2:{type:Number, default: -1},
-	dishes:{type:[{}], default:[]}
+	dishes:{type:[{
+		name:{type:String},
+		tag:{type:[{
+			name:{type:String},
+			value:{type:Number}
+		}]}
+	}], default:[]}
 
 },{ versionKey: false });
 

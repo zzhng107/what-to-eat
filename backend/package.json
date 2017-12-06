@@ -20,19 +20,19 @@
     "url": "https://github.com/uiuc-web-programming/mp3_starter_17.git"
   },
   "dependencies": {
-	"bcryptjs":"*",
-	"connect-flash":"*",
-	"cookie-parser":"^1.4.1",
+    "bcryptjs": "*",
+    "connect-flash": "*",
+    "cookie-parser": "^1.4.1",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
-	"express-handlebars":"*",
-	"express-messages":"*",
-	"express-session":"*",
-	"express-validator":"*",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session": "*",
+    "express-validator": "*",
     "mongoose": "^4.10.0",
     "nodemon": "^1.11.0",
-	"passport":"*",
-	"passport-http":"*",
-	"passport-local":"*"
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
   }
 }
