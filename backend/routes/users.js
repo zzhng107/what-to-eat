@@ -2,27 +2,44 @@ module.exports = function(passport) {
     var express = require('express'), 
         router = express.Router(),
         users  = require('../models/userSchema');
+        restaurants  = require('../models/restaurantSchema')
         mongoose = require('mongoose')
 
     router.post('/register',
         passport.authenticate('local-signup'),
         function(req, res) {
-            res.status(200).json({ user: req.user.email
-        });
+            let where = {$where:"this.dishes.length == 1"}
+            restaurants.find(where, function(err,res_restaurants){
+                console.log(req.isAuthenticated());
+                res.status(200).json({ user: req.user, message: "Welcome!",data:res_restaurants});
+            });
     });
 
     router.post('/login',
         passport.authenticate('local-login'),
         function(req, res) {
-            console.log(req.isAuthenticated());
-            res.status(200).json({ user: req.user.email
-        });
+            let where = {$where:"this.dishes.length == 1"}
+            restaurants.find(where, function(err,res_restaurants){
+                console.log(req.isAuthenticated());
+                res.status(200).json({ user: req.user, message: "Welcome!",data:res_restaurants});
+            });
     });
-    
+
     router.get('/logout', function(req, res) {
         req.logOut();
         res.status(200).json({ message: "logged out "});
     });
+
+    router.get('/getRec',
+        isLoggedIn,
+        function(req, res) {
+            let where = {$where:"this.dishes.length == 1"}
+            restaurants.find(where, function(err,res_restaurants){
+                console.log(req.isAuthenticated());
+                res.status(200).json({ user: req.user, message: "Welcome!",data:res_restaurants});
+            });
+        }
+    );
     return router;
 }
 
