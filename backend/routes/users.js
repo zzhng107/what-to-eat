@@ -31,7 +31,6 @@ module.exports = function(passport) {
     });
 
     router.get('/getRec',
-        isLoggedIn,
         function(req, res) {
             let where = {$where:"this.dishes.length == 1"}
             restaurants.find(where, function(err,res_restaurants){
