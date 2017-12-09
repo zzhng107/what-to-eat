@@ -12,10 +12,9 @@ function isEmpty(obj) {
 module.exports = (passport)=> {
     var express = require('express'), 
         router = express.Router(),
-        users  = require('../models/userSchema'),
-        restaurants  = require('../models/restaurantSchema'),
-        dishes= require('../models/dishSchema'),
-        mongoose = require('mongoose');
+        users  = require('../models/userSchema');
+        restaurants  = require('../models/dishSchema')
+        mongoose = require('mongoose')
 
     router.post('/register',
         passport.authenticate('local-signup'),
