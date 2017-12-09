@@ -33,6 +33,7 @@ router.get('/', function(req,res){
 				score += rest_tag_dic[key] * user_tag_dic[key];
 			}
 		}
+		return score;
 	}
 
 	dishes.find(where).
@@ -59,7 +60,11 @@ router.get('/', function(req,res){
 				}
 				out = dish.map((val, ind)=>{
 					let score = get_score(val.tag, user_t.tag);
-					return {dish: val, score: score};
+					let temp = {};
+					let item = JSON.parse(JSON.stringify(val));
+					Object.assign(temp, item);
+					Object.assign(temp, {score: score});
+					return temp;
 				})
 				res.status(200).send({
 					message:'OK',
