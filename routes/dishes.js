@@ -59,6 +59,7 @@ router.post('/', function(req,res){
 					return;
 				}
 				out = dish.map((val, ind)=>{
+					console.log(val);
 					let score = get_score(val.tag, user_t.tag);
 					let temp = {};
 					let item = JSON.parse(JSON.stringify(val));

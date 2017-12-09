@@ -1,7 +1,7 @@
 {
   "name": "whatToEat_backend",
   "version": "1.0.0",
-  "description":"Backend for whatToEat app",
+  "description": "Backend for whatToEat app",
   "authors": [
     "Zhiwei Zhang",
     "Alan Jin"

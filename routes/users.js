@@ -38,22 +38,19 @@ module.exports = (passport)=> {
         res.status(200).json({message:"logged out"});
     });
 
-    // router.put('/saveForLater',(req, res) =>{
-
-    //     let imgUrl = req.body.imgUrl;
-    //     let email= req.body.email;
-
-        
-
-
-    //     users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
-    //         if(err){
-    //             res.status(500).send(err);
-    //             return;
-    //         }
-    //         res.status(200).json({message:"Updated "+ email});
-    //     });
-    // })
+    router.put('/saveForLater',(req, res) =>{
+        let imgUrl = req.body.imgUrl;
+        let email= req.body.email; 
+        let update_info = {};
+        update_info["$push"] = {save_for_later:imgUrl};
+        users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json({message:"Updated "+ email});
+        });
+    })
 
 
     router.put('/like', (req, res) => {
