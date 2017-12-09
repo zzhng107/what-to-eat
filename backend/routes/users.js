@@ -38,6 +38,23 @@ module.exports = (passport)=> {
         res.status(200).json({message:"logged out"});
     });
 
+    // router.put('/saveForLater',(req, res) =>{
+
+    //     let imgUrl = req.body.imgUrl;
+    //     let email= req.body.email;
+
+        
+
+
+    //     users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+    //         if(err){
+    //             res.status(500).send(err);
+    //             return;
+    //         }
+    //         res.status(200).json({message:"Updated "+ email});
+    //     });
+    // })
+
 
     router.put('/like', (req, res) => {
         
@@ -104,6 +121,8 @@ module.exports = (passport)=> {
             });
         });
     });
+
+
 
         
     return router;

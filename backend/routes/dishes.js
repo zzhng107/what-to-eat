@@ -4,7 +4,7 @@ var express = require('express'),
 	users = require('../models/userSchema')
 	mongoose = require('mongoose')
 
-router.get('/', function(req,res){
+router.post('/', function(req,res){
 
 	let where = {};
 	let limit = 100;
