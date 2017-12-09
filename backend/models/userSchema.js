@@ -5,8 +5,10 @@ var mongoose = require('mongoose'),
 var UserSchema = new mongoose.Schema({
     email: {type:String, required:true},
     password: {type:String, required:true},
-    name:String
-},{ versionKey: false });
+    name:String,
+    tag:{type:[{name:String, value:Number}], default:[]},
+    like:{type:[String],default:[]}
+},{ versionKey: false }); 
 
 UserSchema.methods.generateHash = function(password) {
 	return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);

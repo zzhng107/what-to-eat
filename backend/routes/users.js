@@ -7,7 +7,7 @@ module.exports = function(passport) {
 
     router.post('/register',
         passport.authenticate('local-signup'),
-        function(req, res) {
+        (req, res) => {
             let where = {$where:"this.dishes.length == 1"}
             restaurants.find(where, function(err,res_restaurants){
                 console.log(req.isAuthenticated());
@@ -17,7 +17,7 @@ module.exports = function(passport) {
 
     router.post('/login',
         passport.authenticate('local-login'),
-        function(req, res) {
+        (req, res) => {
             let where = {$where:"this.dishes.length == 1"}
             restaurants.find(where, function(err,res_restaurants){
                 console.log(req.isAuthenticated());
@@ -25,9 +25,14 @@ module.exports = function(passport) {
             });
     });
 
-    router.get('/logout', function(req, res) {
+    router.get('/logout', (req, res) => {
         req.logOut();
         res.status(200).json({ message: "logged out "});
+    });
+
+    router.get('/like', (req, res) => {
+       console.log(req.user.email);
+        
     });
 
     return router;
