@@ -20,30 +20,47 @@ router.get('/', function(req,res){
 	if(req.query.hasOwnProperty('skip')){
 		skip = parseInt(req.query.skip);
 	}
-	
 
+	function get_score(rest_list, user_tag){
+		let score = 0;
+		rest_list.forEach((ele)=>{
+			user_tag.forEach((u_ele)=>{
+				if(ele.name == u_ele.name){
+					score += ele.value * u_ele.value;
+				}
+			})
+		});
+	}
 
 	restaurants.find(where).
 		limit(limit).
 		sort(sort).
 		select(select).
 		skip(skip).
-		count(function(err,count){
+		exec((err,restaurant)=>{
 			if(err){
 				res.status(500).send({
 				message: 'Server Error',
 				data:[]
 				});
 			}else{
-				//
+				//recommendation processing
+				let user_tag;
+				let out;
+				users.find(JSON.parse(`email:${req.query.email}`))
+				.exec((err, user_t)=>{
+					user_tag = user_t.tag;
+				})
+				out = restaurant.map((val, ind)=>{
+					let score = get_score(val, user_tag);
+					return {val: score};
+				})
 				res.status(200).send({
 					message:'OK',
-					data:count
+					data:out
 				})
 			}
 		})
-
-
 
 });
 
