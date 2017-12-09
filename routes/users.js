@@ -36,21 +36,6 @@ module.exports = (passport)=> {
         res.status(200).json({message:"logged out"});
     });
 
-    router.put('/saveForLater',(req, res) =>{
-        let imgUrl = req.body.imgUrl;
-        let email= req.body.email; 
-        let update_info = {};
-        update_info["$push"] = {save_for_later:imgUrl};
-        users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
-            if(err){
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json({message:"Updated "+ email});
-        });
-    })
-
-
     router.put('/like', (req, res) => {
         
         //let dish_id = req.body.dish_id;
@@ -85,7 +70,6 @@ module.exports = (passport)=> {
     });
 
     router.put('/dislike', (req, res) => {
-        
         let imgUrl = req.body.imgUrl;
         let email= req.body.email;
         dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
@@ -117,15 +101,47 @@ module.exports = (passport)=> {
         });
     });
 
-    // router.post('/dietHistory', (req, res)=>{
+
+    router.put('/saveForLater',(req, res) =>{
+        let imgUrl = req.body.imgUrl;
+        let email= req.body.email; 
+        let update_info = {};
+        update_info["$push"] = {save_for_later:imgUrl};
+        users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json({message:"Updated "+ email});
+        });
+    })
+
+
+    router.post('/dietHistory', (req, res)=>{
+        let out = [];
+        users.findOne({email:req.body.email}, (err, user_info)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            out = user_info.dish_like.concat(user_info.dish_dislike);
+            res.status(200).json(out);
+        })
+    })
+
+    router.post('/saveForLater', (req, res)=>{
+        let out = [];
+        users.findOne({email:req.body.email}, (err, user_info)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json(user_info.save_for_later);
+        })
+    })
 
 
 
-    // })
-
-
-
-        
     return router;
 }
 
