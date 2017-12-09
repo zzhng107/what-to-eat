@@ -2,7 +2,7 @@ module.exports = function(passport) {
     var express = require('express'), 
         router = express.Router(),
         users  = require('../models/userSchema');
-        restaurants  = require('../models/restaurantSchema')
+        restaurants  = require('../models/dishSchema')
         mongoose = require('mongoose')
 
     router.post('/register',
