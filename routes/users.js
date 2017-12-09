@@ -1,5 +1,3 @@
-
-
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -118,6 +116,12 @@ module.exports = (passport)=> {
             });
         });
     });
+
+    // router.post('/dietHistory', (req, res)=>{
+
+
+
+    // })
 
 
 
