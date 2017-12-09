@@ -1,6 +1,7 @@
 var express = require('express'), 
 	router = express.Router(),
 	restaurants  = require('../models/restaurantSchema');
+	users = require('../models/userSchema')
 	mongoose = require('mongoose')
 
 router.get('/', function(req,res){
