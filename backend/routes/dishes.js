@@ -50,7 +50,7 @@ router.get('/', function(req,res){
 			}
 			//recommendation processing
 			let out;
-			users.findOne({'email':req.query.email})
+			users.findOne({'email':req.body.email})
 			.exec((err, user_t)=>{
 				if(err){
 					res.status(500).send({
