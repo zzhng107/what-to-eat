@@ -30,8 +30,10 @@ module.exports = function(passport) {
         res.status(200).json({ message: "logged out "});
     });
 
-    router.get('/like', (req, res) => {
+    router.put('/like', (req, res) => {
+        
        console.log(req.user.email);
+       
         
     });
 

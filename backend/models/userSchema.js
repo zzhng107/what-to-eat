@@ -1,6 +1,7 @@
 // Load required packages
 var mongoose = require('mongoose'),
     bcrypt = require('bcrypt');
+
 // Define our task schema
 var UserSchema = new mongoose.Schema({
     email: {type:String, required:true},
