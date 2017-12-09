@@ -29,7 +29,7 @@ module.exports = (passport)=> {
     router.post('/login',
         passport.authenticate('local-login'),
         (req, res) => {
-            res.status(200).send(`Logged in ${req.user.email}`); 
+            res.status(200).send(`Logged in as ${req.user.email}`); 
         }
     );
 
