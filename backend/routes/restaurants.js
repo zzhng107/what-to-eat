@@ -41,15 +41,22 @@ router.get('/', function(req,res){
 		exec((err,restaurant)=>{
 			if(err){
 				res.status(500).send({
-				message: 'Server Error',
-				data:[]
+					message: 'Server Error',
+					data:[]
 				});
-			}else{
+				return;
+			}
 				//recommendation processing
 				let user_tag;
 				let out;
 				users.find(JSON.parse(`email:${req.query.email}`))
 				.exec((err, user_t)=>{
+					if(err){
+						res.status(500).send({
+							message:'ERROR during get user',
+						})
+						return;
+					}
 					user_tag = user_t.tag;
 				})
 				out = restaurant.map((val, ind)=>{
@@ -60,7 +67,7 @@ router.get('/', function(req,res){
 					message:'OK',
 					data:out
 				})
-			}
+			
 		})
 
 });
