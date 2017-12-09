@@ -49,7 +49,7 @@ router.get('/', function(req,res){
 				//recommendation processing
 				let user_tag;
 				let out;
-				console.log(req.query.email);
+				console.log("{email:"+req.query.email+"}");
 				users.find(JSON.parse("{email:"+req.query.email+"}"))
 				.exec((err, user_t)=>{
 					if(err){
