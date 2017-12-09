@@ -1,3 +1,5 @@
+
+
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -12,49 +14,53 @@ function isEmpty(obj) {
 module.exports = (passport)=> {
     var express = require('express'), 
         router = express.Router(),
-        users  = require('../models/userSchema');
-        dishes  = require('../models/dishSchema')
-        mongoose = require('mongoose')
+        users  = require('../models/userSchema'),
+        dishes  = require('../models/dishSchema'),
+        mongoose = require('mongoose'),
+        ObjectId = require('mongodb').ObjectId;
 
     router.post('/register',
         passport.authenticate('local-signup'),
         (req, res) => {
-            res.status(200).json({ user: req.user.email});
+            res.status(200).send(`Registered ${req.user.email}`);
         }
     );
 
     router.post('/login',
         passport.authenticate('local-login'),
         (req, res) => {
-            res.status(200).json({ user: req.user.email}); 
+            res.status(200).send(`Logged in ${req.user.email}`); 
         }
     );
 
     router.get('/logout', (req, res) => {
         req.logOut();
-        res.status(200).json({ message: "logged out "});
+        res.status(200).send("logged out");
     });
+
 
     router.put('/like', (req, res) => {
         
-        let dish_id = req.body.dish_id;
-        dishes.findOne({_id:dish_id}, (err, res_dish)=>{
+        //let dish_id = req.body.dish_id;
+        let imgUrl = req.body.imgUrl;
+        dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
             if(err){
                 res.status(500).send(err);
                 return;
             }
             let update_info = {};
-            update_info["$push"] = {dish_like:dish_id};
+            update_info["$push"] = {dish_like:imgUrl};
             let dish_tags = res_dish.tag;
             let inc = {};
             for(dish_tag in dish_tags){
-                inc[dish_tag] = dish_tags[dish_tag];
+                inc[`tag.${dish_tag}`] = dish_tags[dish_tag];
             }
+            
             if(!isEmpty(inc)){
                 update_info["$inc"] = inc;
             }
-
-            users.update({email:req.user.email},update,(err,res_user)=>{
+            console.log(update_info);
+            users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
                 if(err){
                     res.status(500).send(err);
                     return;
@@ -67,24 +73,25 @@ module.exports = (passport)=> {
 
     router.put('/dislike', (req, res) => {
         
-        let dish_id = req.body.dish_id;
-        dishes.findOne({_id:dish_id}, (err, res_dish)=>{
+        let imgUrl = req.body.imgUrl;
+        dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
             if(err){
                 res.status(500).send(err);
                 return;
             }
             let update_info = {};
-            update_info["$push"] = {dish_dislike:dish_id};
+            update_info["$push"] = {dish_dislike:imgUrl};
             let dish_tags = res_dish.tag;
             let inc = {};
             for(dish_tag in dish_tags){
-                inc[dish_tag] = dish_tags[dish_tag];
+                inc[`tag.${dish_tag}`] = -dish_tags[dish_tag];
             }
+            
             if(!isEmpty(inc)){
-                update_info["$inc"] = -inc;
+                update_info["$inc"] = inc;
             }
 
-            users.update({email:req.user.email},update,(err,res_user)=>{
+            users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
                 if(err){
                     res.status(500).send(err);
                     return;
