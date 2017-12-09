@@ -50,7 +50,8 @@ router.get('/', function(req,res){
 				let user_tag;
 				let out;
 				console.log("{email:"+req.query.email+"}");
-				users.findone()
+				// users.findone(JSON.parse("{email:"+req.query.email+"}"))
+				users.findOne()
 				.exec((err, user_t)=>{
 					if(err){
 						res.status(500).send({
