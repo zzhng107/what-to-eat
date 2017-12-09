@@ -50,7 +50,7 @@ router.get('/', function(req,res){
 				let user_tag;
 				let out;
 				console.log("{email:"+req.query.email+"}");
-				users.find(JSON.parse("{email:"+req.query.email+"}"))
+				users.findone()
 				.exec((err, user_t)=>{
 					if(err){
 						res.status(500).send({
