@@ -22,20 +22,20 @@ module.exports = (passport)=> {
     router.post('/register',
         passport.authenticate('local-signup'),
         (req, res) => {
-            res.status(200).send(`Registered ${req.user.email}`);
+            res.status(200).json({message:`Registered ${req.user.email}`});
         }
     );
 
     router.post('/login',
         passport.authenticate('local-login'),
         (req, res) => {
-            res.status(200).send(`Logged in as ${req.user.email}`); 
+            res.status(200).json({message:`Logged in as ${req.user.email}`}); 
         }
     );
 
     router.get('/logout', (req, res) => {
         req.logOut();
-        res.status(200).send("logged out");
+        res.status(200).json({message:"logged out"});
     });
 
 
@@ -43,6 +43,7 @@ module.exports = (passport)=> {
         
         //let dish_id = req.body.dish_id;
         let imgUrl = req.body.imgUrl;
+        let email= req.body.email;
         dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
             if(err){
                 res.status(500).send(err);
@@ -59,13 +60,13 @@ module.exports = (passport)=> {
             if(!isEmpty(inc)){
                 update_info["$inc"] = inc;
             }
-            console.log(update_info);
-            users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+            //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+            users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
                 if(err){
                     res.status(500).send(err);
                     return;
                 }
-                res.status(200).send("Updated "+ req.user.email);
+                res.status(200).json({message:"Updated "+ email});
 
             });
         });
@@ -74,6 +75,7 @@ module.exports = (passport)=> {
     router.put('/dislike', (req, res) => {
         
         let imgUrl = req.body.imgUrl;
+        let email= req.body.email;
         dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
             if(err){
                 res.status(500).send(err);
@@ -91,12 +93,13 @@ module.exports = (passport)=> {
                 update_info["$inc"] = inc;
             }
 
-            users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+            //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+            users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
                 if(err){
                     res.status(500).send(err);
                     return;
                 }
-                res.status(200).send("Updated "+ req.user.email);
+                res.status(200).json({message:"Updated "+ email});
 
             });
         });
