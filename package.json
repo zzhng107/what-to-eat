@@ -1,10 +1,10 @@
 {
-  "name": "mp3_starter_17",
+  "name": "whatToEat_backend",
   "version": "1.0.0",
-  "description": "MP3 Starter for CS498RK Fall 2017",
+  "description":"Backend for whatToEat app",
   "authors": [
-    "James Lee <jwlee11@illinois.edu>",
-    "Sujay Khandekar <khandek2@illinois.edu>"
+    "Zhiwei Zhang",
+    "Alan Jin"
   ],
   "scripts": {
     "start": "nodemon --exec node server.js"
