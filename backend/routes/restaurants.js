@@ -24,6 +24,8 @@ router.get('/', function(req,res){
 
 	function get_score(rest_list, user_tag){
 		let score = 0;
+		console.log(typeof(rest_list));
+		console.log(user_tag);
 		rest_list.forEach((ele)=>{
 			user_tag.forEach((u_ele)=>{
 				if(ele.name == u_ele.name){
@@ -60,12 +62,12 @@ router.get('/', function(req,res){
 						})
 						return;
 					}
-					user_tag = user_t.tag;
+					out = restaurant.map((val, ind)=>{
+						let score = get_score(val.dish.tag, user_t.tag);
+						return {val: score};
+					})
 				})
-				out = restaurant.map((val, ind)=>{
-					let score = get_score(val, user_tag);
-					return {val: score};
-				})
+				
 				res.status(200).send({
 					message:'OK',
 					data:out
