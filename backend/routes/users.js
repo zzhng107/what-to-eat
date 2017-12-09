@@ -30,15 +30,6 @@ module.exports = function(passport) {
         res.status(200).json({ message: "logged out "});
     });
 
-    router.get('/getRec',
-        function(req, res) {
-            let where = {$where:"this.dishes.length == 1"}
-            restaurants.find(where, function(err,res_restaurants){
-                console.log(req.isAuthenticated());
-                res.status(200).json({ user: req.user, message: "Welcome!",data:res_restaurants});
-            });
-        }
-    );
     return router;
 }
 
