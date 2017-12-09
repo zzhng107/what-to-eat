@@ -7,8 +7,9 @@ var UserSchema = new mongoose.Schema({
     email: {type:String, required:true},
     password: {type:String, required:true},
     name:String,
-    tag:{type:[{name:String, value:Number}], default:[]},
-    like:{type:[String],default:[]}
+    tag:{type:Object, default:{}},
+    dish_like:{type:[String],default:[]},
+    dish_dislike:{type:[String],default:[]}
 },{ versionKey: false }); 
 
 UserSchema.methods.generateHash = function(password) {
