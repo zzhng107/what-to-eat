@@ -22,12 +22,17 @@ router.get('/', function(req,res){
 		skip = parseInt(req.query.skip);
 	}
 
-	function get_score(rest_list, user_tag){
+	function get_score(rest_tag_list, user_tag_list){
 		let score = 0;
-		console.log(typeof(rest_list));
-		console.log(user_tag);
-		rest_list.forEach((ele)=>{
-			user_tag.forEach((u_ele)=>{
+		console.log(typeof(rest_tag_list));
+		console.log(user_tag_list);
+
+		if(!rest_tag_list || !user_tag_list){
+			return score;
+		}
+
+		rest_tag_list.forEach((ele)=>{
+			user_tag_list.forEach((u_ele)=>{
 				if(ele.name == u_ele.name){
 					score += ele.value * u_ele.value;
 				}
@@ -43,35 +48,29 @@ router.get('/', function(req,res){
 		exec((err,restaurant)=>{
 			if(err){
 				res.status(500).send({
-					message: 'ERROR during get restaurant',
-					data:[]
+					message: err,
 				});
 				return;
 			}
-				//recommendation processing
-				let user_tag;
-				let out;
-				console.log("{email:"+req.query.email+"}");
-
-				// users.findone(JSON.parse("{email:"+req.query.email+"}"))
-				users.findOne()
-				.exec((err, user_t)=>{
-					if(err){
-						res.status(500).send({
-							message:'ERROR during get user',
-						})
-						return;
-					}
-					out = restaurant.map((val, ind)=>{
-						let score = get_score(val.dish.tag, user_t.tag);
-						return {val: score};
+			//recommendation processing
+			let out;
+			users.findOne({'email':req.query.email})
+			.exec((err, user_t)=>{
+				if(err){
+					res.status(500).send({
+						message: err,
 					})
+					return;
+				}
+				out = restaurant.map((val, ind)=>{
+					let score = get_score(val.dishes.tag, user_t.tag);
+					return {dish_in_restaurant:val, score:score};
 				})
-				
 				res.status(200).send({
 					message:'OK',
 					data:out
 				})
+			})
 			
 		})
 
@@ -93,13 +92,11 @@ router.get('/:id', function(req,res){
 			function(err,res_restaurant){
 				if(err){
 					res.status(500).send({
-						message: 'Server Error',
-						data:{}
+						message: err,
 					});
 				}else if(res_restaurant===null){
 					res.status(404).send({
-						message: 'restaurant Not Found',
-						data:{}
+						message: err
 					});
 				}else {
 					res.status(200).send({
