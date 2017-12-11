@@ -84,7 +84,6 @@ module.exports = (passport)=> {
                 if(!isEmpty(inc)){
                     update_info["$inc"] = inc;
                 }
-                console.log(update_info);
                 //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
                 users.findOneAndUpdate({email:email},update_info,(err,res_user_up)=>{
                     if(err){
@@ -143,7 +142,6 @@ module.exports = (passport)=> {
                     let dish_imgUrl = hist[hist_date_list[key]].imgUrl;
                     let cur_dish = {};
                     for(ind in dishes){
-                        //console.log(dish.imgUrl );
                         if(dishes[ind].imgUrl == dish_imgUrl){
                             cur_dish = JSON.parse(JSON.stringify(dishes[ind]));
                             break;
