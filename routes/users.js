@@ -47,7 +47,7 @@ module.exports = (passport)=> {
                 return;
             }
             let update_info = {};
-            update_info["$push"] = {dish_like:imgUrl};
+            //update_info["$push"] = {dish_like:imgUrl};
             let dish_tags = res_dish.tag;
             let inc = {};
             for(dish_tag in dish_tags){
@@ -78,7 +78,7 @@ module.exports = (passport)=> {
                 return;
             }
             let update_info = {};
-            update_info["$push"] = {dish_dislike:imgUrl};
+            //update_info["$push"] = {dish_dislike:imgUrl};
             let dish_tags = res_dish.tag;
             let inc = {};
             for(dish_tag in dish_tags){
@@ -101,8 +101,46 @@ module.exports = (passport)=> {
         });
     });
 
+    router.put('/saveHistory',(req, res) =>{
+
+        let imgUrl = req.body.imgUrl;
+        let email= req.body.email; 
+        let update_info = {};
+        let hist = {imgUrl:imgUrl, dateCreated:Date.now()};
+        update_info["$push"] = {hist:hist};
+        users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            res.status(200).json({message:"Updated "+ email});
+        });
+    })
+
+    router.post('/getHistory', (req, res)=>{
+        let out = [];
+        users.findOne({email:req.body.email}, (err, user_info)=>{
+            if(err){
+                res.status(500).send(err);
+                return;
+            }
+            let hist = user_info.hist
+            let hist_dish_list = [];
+            for(let i = 0; i < hist.length; i++){
+                hist_dish_list.push(hist[i].imgUrl);
+            }
+            dishes.find({imgUrl: {$in: hist_dish_list}}, (err, dishes)=>{
+                if(err){
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json({data:dishes});
+            })
+        })
+    })
 
     router.put('/saveForLater',(req, res) =>{
+        
         let imgUrl = req.body.imgUrl;
         let email= req.body.email; 
         let update_info = {};
@@ -115,33 +153,25 @@ module.exports = (passport)=> {
             res.status(200).json({message:"Updated "+ email});
         });
     })
-
-
-    router.post('/dietHistory', (req, res)=>{
+        
+    router.post('/getSaveForLater', (req, res)=>{
         let out = [];
         users.findOne({email:req.body.email}, (err, user_info)=>{
             if(err){
                 res.status(500).send(err);
                 return;
             }
-            out = user_info.dish_like.concat(user_info.dish_dislike);
-            res.status(200).json(out);
+            let save = user_info.save_for_later;
+            dishes.find({imgUrl: {$in: save}}, (err, dishes)=>{
+                if(err){
+                    res.status(500).send(err);
+                    return;
+                }
+                res.status(200).json({data:dishes});
+            })
         })
     })
-
-    router.post('/saveForLater', (req, res)=>{
-        let out = [];
-        users.findOne({email:req.body.email}, (err, user_info)=>{
-            if(err){
-                res.status(500).send(err);
-                return;
-            }
-            res.status(200).json(user_info.save_for_later);
-        })
-    })
-
-
-
+ 
     return router;
 }
 
