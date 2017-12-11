@@ -9,7 +9,8 @@ var UserSchema = new mongoose.Schema({
     name:String,
     tag:{type:Object, default:{}},
     save_for_later:{type:[String],default:[]},
-    hist:{type:[{imgUrl:String, rating:Number, dateCreated:Date}], default:[]}
+    //hist:{type:[{imgUrl:String, rating:Number, dateCreated:Date}], default:[]}
+    hist:{type:Object, default:{}}
 },{ versionKey: false }); 
 
 UserSchema.methods.generateHash = function(password) {

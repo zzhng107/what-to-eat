@@ -15,7 +15,7 @@ module.exports = (passport)=> {
         users  = require('../models/userSchema'),
         dishes  = require('../models/dishSchema'),
         mongoose = require('mongoose'),
-        ObjectId = require('mongodb').ObjectId;
+        ObjectID = require('mongodb').ObjectID;
 
     router.post('/register',
         passport.authenticate('local-signup'),
@@ -36,66 +36,64 @@ module.exports = (passport)=> {
         res.status(200).json({message:"logged out"});
     });
 
-    router.put('/like', (req, res) => {
+    
+
+    router.put('/rate', (req, res) => {
         
         //let dish_id = req.body.dish_id;
-        let imgUrl = req.body.imgUrl;
-        let email= req.body.email;
-        dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
+        let {imgUrl, email, rating, date} = req.body;
+        dishes.findOne({imgUrl:imgUrl}, (err, res_dish)=>{
             if(err){
                 res.status(500).send(err);
                 return;
             }
-            let update_info = {};
-            //update_info["$push"] = {dish_like:imgUrl};
-            let dish_tags = res_dish.tag;
-            let inc = {};
-            for(dish_tag in dish_tags){
-                inc[`tag.${dish_tag}`] = dish_tags[dish_tag];
-            }
-            
-            if(!isEmpty(inc)){
-                update_info["$inc"] = inc;
-            }
-            //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
-            users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+            users.findOne({email:email},(err,res_user)=>{
                 if(err){
                     res.status(500).send(err);
                     return;
                 }
-                res.status(200).json({message:"Updated "+ email});
-
-            });
-        });
-    });
-
-    router.put('/dislike', (req, res) => {
-        let imgUrl = req.body.imgUrl;
-        let email= req.body.email;
-        dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
-            if(err){
-                res.status(500).send(err);
-                return;
-            }
-            let update_info = {};
-            //update_info["$push"] = {dish_dislike:imgUrl};
-            let dish_tags = res_dish.tag;
-            let inc = {};
-            for(dish_tag in dish_tags){
-                inc[`tag.${dish_tag}`] = -dish_tags[dish_tag];
-            }
-            
-            if(!isEmpty(inc)){
-                update_info["$inc"] = inc;
-            }
-
-            //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
-            users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
-                if(err){
-                    res.status(500).send(err);
-                    return;
+                let update_info = {};
+                update_info[`hist.${date}.rating`] = rating;
+                let dish_tags = res_dish.tag;
+                let inc = {};
+                if(rating > 2){
+                    if(res_user.hist[date] == undefined){
+                    ////First time rating
+                        for(dish_tag in dish_tags){
+                            inc[`tag.${dish_tag}`] = dish_tags[dish_tag];
+                        }
+                    }else if(res_user.hist[date].rating < 3){
+                    ////Change rating
+                        for(dish_tag in dish_tags){
+                            inc[`tag.${dish_tag}`] = 2*dish_tags[dish_tag];
+                        }
+                    }
+                }else{
+                    if(res_user.hist[date] == undefined){
+                    ////First time rating
+                        for(dish_tag in dish_tags){
+                            inc[`tag.${dish_tag}`] = -dish_tags[dish_tag];
+                        } 
+                    }else if(res_user.hist[date].rating > 3){
+                    ////Change rating
+                        for(dish_tag in dish_tags){
+                            inc[`tag.${dish_tag}`] = -2*dish_tags[dish_tag];
+                        } 
+                    }
                 }
-                res.status(200).json({message:"Updated "+ email});
+                if(!isEmpty(inc)){
+                    update_info["$inc"] = inc;
+                }
+                console.log(update_info);
+                //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+                users.findOneAndUpdate({email:email},update_info,(err,res_user_up)=>{
+                    if(err){
+                        res.status(500).send(err);
+                        return;
+                    }
+                    res.status(200).json({message:"Updated "+ email});
+    
+                });
 
             });
         });
@@ -104,10 +102,13 @@ module.exports = (passport)=> {
     router.put('/saveHistory',(req, res) =>{
 
         let imgUrl = req.body.imgUrl;
+        //let dishId = req.body.dishId;
         let email= req.body.email; 
         let update_info = {};
-        let hist = {imgUrl:imgUrl, dateCreated:Date.now()};
-        update_info["$push"] = {hist:hist};
+        let hist = {};
+        let time = Date.now();
+        hist[`hist.${time}`] = {imgUrl: imgUrl, dateCreated:time, rating:-1};
+        update_info['$set'] = hist;
         users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
             if(err){
                 res.status(500).send(err);
@@ -172,6 +173,71 @@ module.exports = (passport)=> {
         })
     })
  
+
+    // router.put('/like', (req, res) => {
+        
+    //     //let dish_id = req.body.dish_id;
+    //     let imgUrl = req.body.imgUrl;
+    //     let email= req.body.email;
+    //     dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
+    //         if(err){
+    //             res.status(500).send(err);
+    //             return;
+    //         }
+    //         let update_info = {};
+    //         //update_info["$push"] = {dish_like:imgUrl};
+    //         let dish_tags = res_dish.tag;
+    //         let inc = {};
+    //         for(dish_tag in dish_tags){
+    //             inc[`tag.${dish_tag}`] = dish_tags[dish_tag];
+    //         }
+            
+    //         if(!isEmpty(inc)){
+    //             update_info["$inc"] = inc;
+    //         }
+    //         //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+    //         users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+    //             if(err){
+    //                 res.status(500).send(err);
+    //                 return;
+    //             }
+    //             res.status(200).json({message:"Updated "+ email});
+
+    //         });
+    //     });
+    // });
+
+    // router.put('/dislike', (req, res) => {
+    //     let imgUrl = req.body.imgUrl;
+    //     let email= req.body.email;
+    //     dishes.findOne({imgUrl: imgUrl}, (err, res_dish)=>{
+    //         if(err){
+    //             res.status(500).send(err);
+    //             return;
+    //         }
+    //         let update_info = {};
+    //         //update_info["$push"] = {dish_dislike:imgUrl};
+    //         let dish_tags = res_dish.tag;
+    //         let inc = {};
+    //         for(dish_tag in dish_tags){
+    //             inc[`tag.${dish_tag}`] = -dish_tags[dish_tag];
+    //         }
+            
+    //         if(!isEmpty(inc)){
+    //             update_info["$inc"] = inc;
+    //         }
+
+    //         //users.findOneAndUpdate({email:req.user.email},update_info,(err,res_user)=>{
+    //         users.findOneAndUpdate({email:email},update_info,(err,res_user)=>{
+    //             if(err){
+    //                 res.status(500).send(err);
+    //                 return;
+    //             }
+    //             res.status(200).json({message:"Updated "+ email});
+
+    //         });
+    //     });
+    // });
     return router;
 }
 
