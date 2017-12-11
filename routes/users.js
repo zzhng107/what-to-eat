@@ -125,17 +125,31 @@ module.exports = (passport)=> {
                 res.status(500).send(err);
                 return;
             }
-            let hist = user_info.hist
-            let hist_dish_list = [];
-            for(let i = 0; i < hist.length; i++){
-                hist_dish_list.push(hist[i].imgUrl);
+            let hist = user_info.hist;
+            let hist_imgurl_list = [];
+            for(key in hist){
+                hist_imgurl_list.push(hist[key].imgUrl);
             }
-            dishes.find({imgUrl: {$in: hist_dish_list}}, (err, dishes)=>{
-                if(err){
-                    res.status(500).send(err);
-                    return;
-                }
-                res.status(200).json({data:dishes});
+            dishes.find({imgUrl: {$in: hist_imgurl_list}}, (err, dishes)=>{
+               if(err){
+                   res.status(500).send(err);
+                   return;
+               }
+               data = [];
+               for(key in hist){
+                    let dish_imgUrl = hist[key].imgUrl;
+                    let cur_dish = {};
+                    for(ind in dishes){
+                        //console.log(dish.imgUrl );
+                        if(dishes[ind].imgUrl == dish_imgUrl){
+                            cur_dish = JSON.parse(JSON.stringify(dishes[ind]));
+                            break;
+                        }
+                    }
+                    cur_dish["dateCreated"] = key;
+                    data.push(cur_dish);
+               }
+               res.status(200).json({data:data});
             })
         })
     })
